@@ -37,7 +37,8 @@ if (!string.IsNullOrEmpty(logConnectionString))
 {
 
     //Database
-    builder.Services.AddDbContext<NezChuDbContext>(options =>
+    //https://www.youtube.com/watch?v=CalH0TJrhp8 -> should use dbcontextfactory to dispose dbcontext right away. 
+    builder.Services.AddDbContextFactory<NezChuDbContext>(options =>
                 options.UseNpgsql(logConnectionString));
 
     // Configure serilog logging

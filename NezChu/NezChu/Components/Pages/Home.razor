@@ -1,5 +1,8 @@
 ﻿@page "/"
+
+
 @inject IConfiguration Config
+@inject IDbContextFactory<NezChuDbContext> _dbContextFactory
 
 <PageTitle>Home</PageTitle>
 
@@ -9,14 +12,21 @@ Welcome to your new app.
 
 <p class="h4">
     Default con: @defaultCon
+</p>
 
+<p class="h4">
+    DbContext Con: @dbcon
 </p>
 
 @code {
     private string defaultCon = "";
+    private string dbcon = "";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         defaultCon = Config.GetConnectionString("SupabaseConnectionString") ?? "unknown";
+        using (var context = await _dbContextFactory.CreateDbContextAsync()){
+            dbcon = context.Database.GetConnectionString() ?? "unknown";
+        }
     }
 }
