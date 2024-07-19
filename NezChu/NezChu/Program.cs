@@ -46,7 +46,7 @@ if (!string.IsNullOrEmpty(logConnectionString))
         option.UseNpgsql(logConnectionString, builder =>
          {
              builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-         })
+         });
     });
 
     // Configure serilog logging
