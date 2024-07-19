@@ -41,7 +41,13 @@ if (!string.IsNullOrEmpty(logConnectionString))
     //Database
     //https://www.youtube.com/watch?v=CalH0TJrhp8 -> should use dbcontextfactory to dispose dbcontext right away. 
     //It is recommended in the AddDbContextFactory description
-    builder.Services.AddDbContextFactory<NezChuDbContext>();
+    builder.Services.AddDbContextFactory<NezChuDbContext>(option =>
+    {
+        option.UseNpgsql(logConnectionString, builder =>
+         {
+             builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+         })
+    });
 
     // Configure serilog logging
     IDictionary<string, ColumnWriterBase> columnOptions = new Dictionary<string, ColumnWriterBase>
@@ -81,6 +87,7 @@ if (!string.IsNullOrEmpty(logConnectionString))
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+#region Pipelines
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseDeveloperExceptionPage();
@@ -99,6 +106,7 @@ app.UseStatusCodePagesWithReExecute("/StatusCode/{0}");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
+#endregion
 
 app.MapCarter(); //Map Minimal Api
 

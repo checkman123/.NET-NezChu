@@ -12,14 +12,6 @@ namespace NezChu.Database
         {
             _configuration = configuration;
         }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql(_configuration["SupabaseConnectionString"], builder =>
-            {
-                builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-            });
-        }
         #endregion
 
         #region DbSets
