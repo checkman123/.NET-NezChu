@@ -10,6 +10,7 @@ namespace NezChu.Database.Entities
     public class IpLog
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int LogId { get; set; }
 
         public string Ipaddress { get; set; } = null!;
