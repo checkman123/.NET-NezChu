@@ -1,6 +1,6 @@
 ﻿@page "/"
 @inject IConfiguration Config
-@inject NezChuDbContext _dbContext
+@inject IDbContextFactory<NezChuDbContext> _dbContextFactory
 
 <PageTitle>Home</PageTitle>
 
@@ -25,6 +25,9 @@ Welcome to your new app.
     {
         defaultCon = Config.GetConnectionString("SupabaseConnectionString") ?? "unknown";
 
-        dbcon = _dbContext.Database.GetConnectionString() ?? "unknown";
+        using (var context = _dbContextFactory.CreateDbContext()){
+            dbcon = context.Database.GetConnectionString() ?? "unknown";
+        }
+        
     }
 }

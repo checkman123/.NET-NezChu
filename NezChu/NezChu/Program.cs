@@ -40,19 +40,8 @@ if (!string.IsNullOrEmpty(logConnectionString))
 
     //Database
     //https://www.youtube.com/watch?v=CalH0TJrhp8 -> should use dbcontextfactory to dispose dbcontext right away. 
-    //This is for interactive server components
-    builder.Services.AddDbContextFactory<NezChuDbContext>(options =>
-                options.UseNpgsql(logConnectionString, builder =>
-                {
-                    builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-                }));
-
-    //this is for the rest i guess
-    builder.Services.AddDbContext<NezChuDbContext>(options =>
-            options.UseNpgsql(logConnectionString, builder =>
-            {
-                builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-            }));
+    //It is recommended in the AddDbContextFactory description
+    builder.Services.AddDbContextFactory<NezChuDbContext>();
 
     // Configure serilog logging
     IDictionary<string, ColumnWriterBase> columnOptions = new Dictionary<string, ColumnWriterBase>
@@ -85,7 +74,7 @@ if (!string.IsNullOrEmpty(logConnectionString))
         loggingBuilder.AddSerilog(logger);
     });
 
-    logger.Information("!! Working Serilog !!");
+    logger.Information($"!! Working Serilog !! log str: {logConnectionString?.Substring(1,5)}");
 }
 #endregion
 
