@@ -8,6 +8,7 @@ using Serilog.Events;
 using Serilog.Filters;
 using NezChu.Database;
 using Microsoft.EntityFrameworkCore;
+using Carter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+#region My Services
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddCarter();
+
+builder.Services.AddWebOptimizer(pipeline =>
+{
+    pipeline.AddCssBundle("/css/site.css", "scss/site.scss");
+    pipeline.MinifyJsFiles("js/**/*.js", "js/**/*.js");
+});
+#endregion
 
 #region DbContext and Logging
 //Connection string is from Secret Manager. (Right-click on project and select "Manage User Secrets")
@@ -67,7 +80,10 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
+    app.UseDeveloperExceptionPage();
     app.UseWebAssemblyDebugging();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
@@ -76,10 +92,12 @@ else
     app.UseHsts();
 }
 
+app.UseStatusCodePagesWithReExecute("/StatusCode/{0}");
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+app.MapCarter(); //Map Minimal Api
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
