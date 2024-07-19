@@ -20,7 +20,7 @@ namespace NezChu.Api
                 return Results.Ok("Ok");
             });
 
-            app.MapPost("/test", (NezChuDbContext nezChuDbContext) =>
+            app.MapPost("/test", async (NezChuDbContext nezChuDbContext) =>
             {
                 IpLog newLog = new IpLog()
                 {
@@ -28,8 +28,8 @@ namespace NezChu.Api
                     Date = DateTime.Now.ToUniversalTime(),
                 };
 
-                nezChuDbContext.Add(newLog);
-                nezChuDbContext.SaveChanges();
+                await nezChuDbContext.AddAsync(newLog);
+                await nezChuDbContext.SaveChangesAsync();
 
                 return Results.Ok();
             });

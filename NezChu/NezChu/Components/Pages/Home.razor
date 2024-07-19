@@ -1,8 +1,9 @@
 ﻿@page "/"
-
-
 @inject IConfiguration Config
 @inject IDbContextFactory<NezChuDbContext> _dbContextFactory
+@inject HttpClient _httpClient
+@inject NavigationManager _navigationManager;
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
@@ -18,15 +19,36 @@ Welcome to your new app.
     DbContext Con: @dbcon
 </p>
 
+Nav Manager: @_navigationManager.BaseUri
+
+<button type="button" @onclick="SendPostRequest">Send POST</button>
+
+<p>response: @res</p>
+
 @code {
     private string defaultCon = "";
     private string dbcon = "";
+    private string res = "";
 
     protected override async Task OnInitializedAsync()
     {
         defaultCon = Config.GetConnectionString("SupabaseConnectionString") ?? "unknown";
         using (var context = await _dbContextFactory.CreateDbContextAsync()){
             dbcon = context.Database.GetConnectionString() ?? "unknown";
+        }
+    }
+
+    async Task SendPostRequest()
+    {
+        var response = await _httpClient.PostAsync($"{_navigationManager.BaseUri}api/example/test", null);
+
+        if (response.IsSuccessStatusCode)
+        {
+            res = "it works";
+        }
+        else
+        {
+            res = "nope";
         }
     }
 }

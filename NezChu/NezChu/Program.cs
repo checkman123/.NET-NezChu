@@ -22,6 +22,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCarter();
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddWebOptimizer(pipeline =>
 {
     pipeline.AddCssBundle("/css/site.css", "scss/site.scss");
@@ -38,8 +40,19 @@ if (!string.IsNullOrEmpty(logConnectionString))
 
     //Database
     //https://www.youtube.com/watch?v=CalH0TJrhp8 -> should use dbcontextfactory to dispose dbcontext right away. 
+    //This is for interactive server components
     builder.Services.AddDbContextFactory<NezChuDbContext>(options =>
-                options.UseNpgsql(logConnectionString));
+                options.UseNpgsql(logConnectionString, builder =>
+                {
+                    builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                }));
+
+    //this is for the rest i guess
+    builder.Services.AddDbContext<NezChuDbContext>(options =>
+            options.UseNpgsql(logConnectionString, builder =>
+            {
+                builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+            }));
 
     // Configure serilog logging
     IDictionary<string, ColumnWriterBase> columnOptions = new Dictionary<string, ColumnWriterBase>
