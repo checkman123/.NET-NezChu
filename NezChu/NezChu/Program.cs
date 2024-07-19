@@ -4,10 +4,10 @@ using NpgsqlTypes;
 using Serilog.Sinks.PostgreSQL.ColumnWriters;
 using Serilog.Sinks.PostgreSQL;
 using Serilog;
-using System.Net.Sockets;
-using System.Net;
 using Serilog.Events;
 using Serilog.Filters;
+using NezChu.Database;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,13 +16,18 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-#region Logging
-// Configure serilog logging
+#region DbContext and Logging
 //Connection string is from Secret Manager. (Right-click on project and select "Manage User Secrets")
 var logConnectionString = builder.Configuration["SupabaseConnectionString"];
 
 if (!string.IsNullOrEmpty(logConnectionString))
 {
+
+    //Database
+    builder.Services.AddDbContext<NezChuDbContext>(options =>
+                options.UseNpgsql(logConnectionString));
+
+    // Configure serilog logging
     IDictionary<string, ColumnWriterBase> columnOptions = new Dictionary<string, ColumnWriterBase>
         {
             { "message", new RenderedMessageColumnWriter(NpgsqlDbType.Text) },
@@ -53,23 +58,14 @@ if (!string.IsNullOrEmpty(logConnectionString))
         loggingBuilder.AddSerilog(logger);
     });
 
-    logger.Information("Working Serilog");
-    var host = Dns.GetHostEntry(Dns.GetHostName());
-    foreach (var ip in host.AddressList)
-    {
-        if (ip.AddressFamily == AddressFamily.InterNetwork)
-        {
-            logger.Information("Application starting. IP Address: {IpAddress}", ip.ToString());
-            break;
-        }
-    }
+    logger.Information("!! Working Serilog !!");
 }
 #endregion
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseWebAssemblyDebugging();
 }
