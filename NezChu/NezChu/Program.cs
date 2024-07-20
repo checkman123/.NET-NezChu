@@ -33,7 +33,7 @@ builder.Services.AddWebOptimizer(pipeline =>
 
 #region DbContext and Logging
 //Connection string is from Secret Manager. (Right-click on project and select "Manage User Secrets")
-var logConnectionString = builder.Configuration["SupabaseConnectionString"];
+var logConnectionString = builder.Configuration.GetConnectionString("SupabaseConnectionString");
 
 if (!string.IsNullOrEmpty(logConnectionString))
 {
