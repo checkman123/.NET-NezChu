@@ -9,6 +9,10 @@
         <HxSidebarBrand BrandName="NEZ" BrandNameShort="NZ" />
     </HeaderTemplate>
     <ItemsTemplate>
+        @if (!string.IsNullOrEmpty(Username))
+        {
+            <HxSidebarItem Text="@($"Hello, {Username}")" />
+        }
         <HxSidebarItem Text="Compact item" Icon="BootstrapIcon.Person" Href="." Match="NavLinkMatch.Prefix">
             <HxSidebarItem Text="Try to rollout another item" Href="#x1" Match="NavLinkMatch.All" />
             <HxSidebarItem Text="Seriously try it" Href="TEST" />
@@ -27,6 +31,32 @@
         </HxSidebarItem>
     </ItemsTemplate>
     <FooterTemplate>
+        @if (!string.IsNullOrEmpty(Username))
+        {
+            <HxSidebarFooter Href="/api/Account/Logout" Icon="BootstrapIcon.Person" Text="@(context.SidebarCollapsed ? "" : "Logout")" />
+        }
+        else
+        {
+            <HxSidebarFooter Href="/api/Account/Login?redirectUri=/" Icon="BootstrapIcon.Person" Text="@(context.SidebarCollapsed ? "" : "Login")" />
+        }
         <HxSidebarFooter Text="@($"Version: {sourceRevisionId}")" />
     </FooterTemplate>
 </HxSidebar>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    private string Username = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationState is not null)
+        {
+            var state = await authenticationState;
+
+            Username = state?.User?.Identity?.Name ?? string.Empty;
+        }
+        await base.OnInitializedAsync();
+    }
+}

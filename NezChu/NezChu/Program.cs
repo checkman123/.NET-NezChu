@@ -10,6 +10,9 @@ using NezChu.Database;
 using Microsoft.EntityFrameworkCore;
 using Carter;
 using Havit.Blazor.Components.Web;
+using Auth0.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
+using NezChu.AuthenticationStateSyncer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,6 +91,18 @@ if (!string.IsNullOrEmpty(logConnectionString))
 }
 #endregion
 
+#region Auth0 Login
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
+
+builder.Services.AddAuth0WebAppAuthentication(options =>
+{
+    options.Domain = builder.Configuration["Auth0Domain"];
+    options.ClientId = builder.Configuration["Auth0ClientId"];
+    options.Scope = "openid profile email";
+});
+#endregion
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -110,6 +125,8 @@ app.UseStatusCodePagesWithReExecute("/StatusCode/{0}");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
+app.UseAuthentication();
+app.UseAuthorization();
 #endregion
 
 app.MapCarter(); //Map Minimal Api
