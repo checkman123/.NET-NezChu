@@ -6,28 +6,9 @@
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app.
-
-<p class="h4">
-    Default con: @defaultCon
-</p>
-
-<p class="h4">
-    DbContext Con: @dbcon
-</p>
-
 @code {
-    private string defaultCon = "";
-    private string dbcon = "";
-    private string res = "";
-
     protected override async Task OnInitializedAsync()
     {
-        defaultCon = Config.GetConnectionString("SupabaseConnectionString") ?? "unknown";
-
-        using (var context = _dbContextFactory.CreateDbContext()){
-            dbcon = context.Database.GetConnectionString() ?? "unknown";
-        }
         
     }
 }

@@ -9,6 +9,7 @@ using Serilog.Filters;
 using NezChu.Database;
 using Microsoft.EntityFrameworkCore;
 using Carter;
+using Havit.Blazor.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,11 @@ builder.Services.AddWebOptimizer(pipeline =>
     pipeline.AddCssBundle("/css/site.css", "scss/site.scss");
     pipeline.MinifyJsFiles("js/**/*.js", "js/**/*.js");
 });
+
+//Havit Blazor
+builder.Services.AddHxServices();
+builder.Services.AddHxMessenger();
+builder.Services.AddHxMessageBoxHost();
 #endregion
 
 #region DbContext and Logging
@@ -79,8 +85,6 @@ if (!string.IsNullOrEmpty(logConnectionString))
     {
         loggingBuilder.AddSerilog(logger);
     });
-
-    logger.Information($"!! Working Serilog !! log str: {logConnectionString?.Substring(1,5)}");
 }
 #endregion
 

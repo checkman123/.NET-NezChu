@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -9,11 +10,18 @@
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="NezChu.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
+    <!-- Bootstrap CSS (you can set the Bootstrap flavor with a parameter) -->
+    @((MarkupString)HxSetup.RenderBootstrapCssReference())
+    <!-- Default values for additional CSS Variables (+ import Bootstrap Icons) -->
+    <link href="_content/Havit.Blazor.Components.Web.Bootstrap/defaults.css" rel="stylesheet" />
+    <!-- Blazor CSS Isolation -->
+    <link href="Your.Blazor.Project.Assembly.Name.styles.css" rel="stylesheet" />
     <HeadOutlet />
 </head>
 
 <body>
     <Routes />
+    @((MarkupString)HxSetup.RenderBootstrapJavaScriptReference())
     <script src="_framework/blazor.web.js"></script>
 </body>
 
